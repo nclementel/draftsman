@@ -181,7 +181,8 @@ module Draftsman
         locales = object.translations.map {|l| l.locale}
         attrs = object.attributes.except(*self.class.draftsman_options[:skip])
         puts attrs
-        attrs.map! {|a| object.translated_attribute_names.include?(a.to_sym) ? locales.map {|l| "#{a}_#{l.downcase}"} : a}.flatten
+        ages.map! {|k, v| [object.translated_attribute_names.include?(k.to_sym) ? locales.map {|l| "#{k}_#{l.downcase}"} : a, v] }.flatten.to_h
+        # attrs.map! {|a| object.translated_attribute_names.include?(a.to_sym) ? locales.map {|l| "#{a}_#{l.downcase}"} : a}.flatten
         puts attrs
         attrs = attrs.tap do |attributes|
           # if self.translated_attribute_names.include? attr.to_sym
