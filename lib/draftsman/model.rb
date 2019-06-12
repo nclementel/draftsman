@@ -414,9 +414,9 @@ module Draftsman
               the_changes[attr] = [self.draft.changeset[attr].first, send(attr)]
             elsif self.translated_attribute_names.include? attr.to_sym
               locales.each do |l|
-                attr = "#{attr}_#{l.downcase}"
-                puts attr
-                the_changes[attr] = [nil, self.send(attr)]
+                attr_l = "#{attr}_#{l.downcase}"
+                puts attr_l
+                the_changes[attr_l] = [nil, self.send(attr_l)]
               end
             else
               the_changes[attr] = [self.send("#{attr}_was"), self.send(attr)]
@@ -427,10 +427,8 @@ module Draftsman
         else
           draftable_attrs.each { |attr| the_changes[attr] = [nil, send(attr)] }
         end
-        puts the_changes
         # Purge attributes that haven't changed.
         the_changes.delete_if { |key, value| value.first == value.last }
-        puts the_changes
       end
 
       # Merges model-level metadata from `meta` and `controller_info` into draft object.
