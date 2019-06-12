@@ -177,10 +177,12 @@ module Draftsman
       # Returns serialized object representing this drafted item.
       def object_attrs_for_draft_record(object = nil)
         object ||= self
-
-        locales = self.translations.map {|l| l.locale}
+        puts object
+        puts self
+        locales = object.translations.map {|l| l.locale}
         attrs = object.attributes.except(*self.class.draftsman_options[:skip]).tap
-        attrs.map! {|a| self.translated_attribute_names.include?(a.to_sym) ? locales.map {|l| "#{a}_#{l.downcase}"} : a}.flatten
+        puts attrs
+        attrs.map! {|a| object.translated_attribute_names.include?(a.to_sym) ? locales.map {|l| "#{a}_#{l.downcase}"} : a}.flatten
         puts attrs
         attrs do |attributes|
           # if self.translated_attribute_names.include? attr.to_sym
@@ -351,7 +353,6 @@ module Draftsman
             else
               the_changes = changes_for_draftsman(:update)
               save_only_columns_for_draft if Draftsman.stash_drafted_changes?
-              puts the_changes
               # Destroy the draft if this record has changed back to the
               # original values.
               if self.draft? && the_changes.empty?
