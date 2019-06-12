@@ -368,6 +368,7 @@ module Draftsman
                   end
                 # If there's not an existing draft, create an update draft.
                 else
+                  puts data.inspect
                   send("build_#{self.class.draft_association_name}", data)
 
                   if send(self.class.draft_association_name).save
