@@ -407,25 +407,23 @@ module Draftsman
         # If there's already an update draft, get its changes and reconcile them
         # manually.
         if event == :update
-           puts 'here1'
           # Collect all attributes' previous and new values.
           draftable_attrs.each do |attr|
             if self.draft? && self.draft.changeset && self.draft.changeset.key?(attr)
               the_changes[attr] = [self.draft.changeset[attr].first, send(attr)]
             else
-              puts 'here2'
               the_changes[attr] = [self.send("#{attr}_was"), send(attr)]
             end
           end
         # If there is no draft or it's for a create, then all draftable
         # attributes are the changes.
         else
-           puts 'here3'
           draftable_attrs.each { |attr| the_changes[attr] = [nil, send(attr)] }
         end
-
+        puts the_changes
         # Purge attributes that haven't changed.
         the_changes.delete_if { |key, value| value.first == value.last }
+        puts the_changes
       end
 
       # Merges model-level metadata from `meta` and `controller_info` into draft object.
