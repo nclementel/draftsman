@@ -324,6 +324,7 @@ module Draftsman
         transaction do
           run_callbacks :draft_update do
             # Run validations.
+            puts self.valid?
             return false unless self.valid?
 
             # If updating a create draft, also update this item.
@@ -338,9 +339,10 @@ module Draftsman
               send(self.class.draft_association_name).update(data)
               save
             else
+
               the_changes = changes_for_draftsman(:update)
               save_only_columns_for_draft if Draftsman.stash_drafted_changes?
-
+              puts the_changes
               # Destroy the draft if this record has changed back to the
               # original values.
               if self.draft? && the_changes.empty?
