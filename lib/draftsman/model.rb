@@ -181,12 +181,10 @@ module Draftsman
         attrs = object.attributes.except(*self.class.draftsman_options[:skip])
         puts attrs
         if globalize
-          locales = object.translations.map {|l| l.locale}
-          locales.each do |l|
-            attrs["description_#{l}"] = object.with_translations(l).description
-            attrs["approach_#{l}"] = object.with_translations(l).approach
-            attrs["access_#{l}"] = object.with_translations(l).access
-            attrs["notes_#{l}"] = object.with_translations(l).notes
+          object.translations.each do |l|
+            object.translated_attribute_names.each do |attr|
+              attrs["#{attr}_#{l.locale}"] = l.send(attr)
+            end
           end
         end
 
