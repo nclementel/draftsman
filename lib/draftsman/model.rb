@@ -412,7 +412,10 @@ module Draftsman
             if self.draft? && self.draft.changeset && self.draft.changeset.key?(attr)
               the_changes[attr] = [self.draft.changeset[attr].first, send(attr)]
             else
+              puts attr
               the_changes[attr] = [self.send("#{attr}_was"), send(attr)]
+              puts the_changes
+
             end
           end
         # If there is no draft or it's for a create, then all draftable
@@ -423,7 +426,6 @@ module Draftsman
         puts the_changes
         # Purge attributes that haven't changed.
         the_changes.delete_if { |key, value| value.first == value.last }
-        puts the_changes
       end
 
       # Merges model-level metadata from `meta` and `controller_info` into draft object.
