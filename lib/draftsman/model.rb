@@ -351,7 +351,7 @@ module Draftsman
             else
               the_changes = changes_for_draftsman(:update)
               save_only_columns_for_draft if Draftsman.stash_drafted_changes?
-
+              puts the_changes
               # Destroy the draft if this record has changed back to the
               # original values.
               if self.draft? && the_changes.empty?
