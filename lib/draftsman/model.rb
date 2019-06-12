@@ -178,8 +178,19 @@ module Draftsman
       def object_attrs_for_draft_record(object = nil)
         object ||= self
 
-        attrs = object.attributes.except(*self.class.draftsman_options[:skip]).tap do |attributes|
-          self.class.serialize_attributes_for_draftsman(attributes)
+        locales = self.translations.map {|l| l.locale}
+        attrs = bject.attributes.except(*self.class.draftsman_options[:skip]).tap
+        attrs.map! {|a| self.translated_attribute_names.include?(a.to_sym) ? locales.map {|l| "#{a}_#{l.downcase}"} : a}.flatten
+
+        attrs do |attributes|
+          # if self.translated_attribute_names.include? attr.to_sym
+          #   locales.each do |l|
+          #     attributes_l = "#{attributes}_#{l.downcase}"
+          #     self.class.serialize_attributes_for_draftsman(attributes_l)
+          #   end
+          # else
+            self.class.serialize_attributes_for_draftsman(attributes)
+          # end
         end
 
         if self.class.draft_class.object_col_is_json?
@@ -404,8 +415,6 @@ module Draftsman
         draftable_attrs = self.attributes.keys - ignore - skip
         draftable_attrs = draftable_attrs & only if only.present?
 
-        locales = self.translations.map {|l| l.locale}
-        # draftable_attrs.map! {|a| self.translated_attribute_names.include?(a.to_sym) ? locales.map {|l| "#{a}_#{l.downcase}"} : a}.flatten
         # If there's already an update draft, get its changes and reconcile them
         # manually.
         if event == :update
@@ -413,11 +422,6 @@ module Draftsman
           draftable_attrs.each do |attr|
             if self.draft? && self.draft.changeset && self.draft.changeset.key?(attr)
               the_changes[attr] = [self.draft.changeset[attr].first, send(attr)]
-            elsif self.translated_attribute_names.include? attr.to_sym
-              locales.each do |l|
-                attr_l = "#{attr}_#{l.downcase}"
-                the_changes[attr_l] = [nil, self.send(attr_l)]
-              end
             else
               the_changes[attr] = [self.send("#{attr}_was"), self.send(attr)]
             end
@@ -471,7 +475,6 @@ module Draftsman
       # Returns changeset data in format appropriate for `object_changes`
       # column.
       def serialized_draft_changeset(my_changes)
-        puts my_changes
         self.class.draft_class.object_changes_col_is_json? ? my_changes : Draftsman.serializer.dump(my_changes)
       end
 
