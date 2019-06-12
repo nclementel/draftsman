@@ -178,12 +178,20 @@ module Draftsman
       def object_attrs_for_draft_record(object = nil)
         object ||= self
 
-        locales = object.translations.map {|l| l.locale}
         attrs = object.attributes.except(*self.class.draftsman_options[:skip])
+
+        if globalize
+          locales = object.translations.map {|l| l.locale}
+          locales.each do |l|
+            attrs["description_#{l}"] = object.with_translations(l).description
+            attrs["approach_#{l}"] = object.with_translations(l).approach
+            attrs["access_#{l}"] = object.with_translations(l).access
+            attrs["notes_#{l}"] = object.with_translations(l).notes
+          end
+        end
+
         puts attrs
-        ages.map! {|k, v| [object.translated_attribute_names.include?(k.to_sym) ? locales.map {|l| "#{k}_#{l.downcase}"} : a, v] }.flatten.to_h
-        # attrs.map! {|a| object.translated_attribute_names.include?(a.to_sym) ? locales.map {|l| "#{a}_#{l.downcase}"} : a}.flatten
-        puts attrs
+
         attrs = attrs.tap do |attributes|
           # if self.translated_attribute_names.include? attr.to_sym
           #   locales.each do |l|
