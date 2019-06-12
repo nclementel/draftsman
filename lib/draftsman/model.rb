@@ -412,7 +412,7 @@ module Draftsman
           draftable_attrs.each do |attr|
             if self.draft? && self.draft.changeset && self.draft.changeset.key?(attr)
               the_changes[attr] = [self.draft.changeset[attr].first, send(attr)]
-            elsif self.translated_attribute_names.include? attr.to_sym
+            elsif self.globalize_attribute_names.include? attr.to_sym
               the_changes[attr] = [nil, self.send(attr)]
             else
               the_changes[attr] = [self.send("#{attr}_was"), self.send(attr)]
