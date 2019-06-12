@@ -415,7 +415,6 @@ module Draftsman
             elsif self.translated_attribute_names.include? attr.to_sym
               locales.each do |l|
                 attr_l = "#{attr}_#{l.downcase}"
-                puts attr_l
                 the_changes[attr_l] = [nil, self.send(attr_l)]
               end
             else
@@ -471,6 +470,7 @@ module Draftsman
       # Returns changeset data in format appropriate for `object_changes`
       # column.
       def serialized_draft_changeset(my_changes)
+        puts my_changes
         self.class.draft_class.object_changes_col_is_json? ? my_changes : Draftsman.serializer.dump(my_changes)
       end
 
