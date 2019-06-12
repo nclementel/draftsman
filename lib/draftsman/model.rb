@@ -177,9 +177,9 @@ module Draftsman
       # Returns serialized object representing this drafted item.
       def object_attrs_for_draft_record(object = nil)
         object ||= self
-
+        globalize = true
         attrs = object.attributes.except(*self.class.draftsman_options[:skip])
-
+        puts attrs
         if globalize
           locales = object.translations.map {|l| l.locale}
           locales.each do |l|
