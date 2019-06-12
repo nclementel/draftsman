@@ -62,6 +62,8 @@ module Draftsman
       return attributes if self.draft_class.object_col_is_json?
 
       attributes.each do |key, value|
+        puts attributes[key]
+        puts value
         attributes[key] = type_for_attribute(key).send(serializer, value)
       end
     end

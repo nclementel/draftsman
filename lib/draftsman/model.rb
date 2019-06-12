@@ -181,7 +181,7 @@ module Draftsman
         locales = self.translations.map {|l| l.locale}
         attrs = bject.attributes.except(*self.class.draftsman_options[:skip]).tap
         attrs.map! {|a| self.translated_attribute_names.include?(a.to_sym) ? locales.map {|l| "#{a}_#{l.downcase}"} : a}.flatten
-
+        puts attrs
         attrs do |attributes|
           # if self.translated_attribute_names.include? attr.to_sym
           #   locales.each do |l|
@@ -423,7 +423,7 @@ module Draftsman
             if self.draft? && self.draft.changeset && self.draft.changeset.key?(attr)
               the_changes[attr] = [self.draft.changeset[attr].first, send(attr)]
             else
-              the_changes[attr] = [self.send("#{attr}_was"), self.send(attr)]
+              the_changes[attr] = [self.send("#{attr}_was"), send(attr)]
             end
           end
         # If there is no draft or it's for a create, then all draftable
