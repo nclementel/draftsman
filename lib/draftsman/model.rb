@@ -338,7 +338,6 @@ module Draftsman
               send(self.class.draft_association_name).update(data)
               save
             else
-              puts 'here'
               the_changes = changes_for_draftsman(:update)
               save_only_columns_for_draft if Draftsman.stash_drafted_changes?
 
@@ -404,6 +403,9 @@ module Draftsman
         draftable_attrs = self.attributes.keys - ignore - skip
         draftable_attrs = draftable_attrs & only if only.present?
 
+        locales = self.translations.map {|l| l.locale}
+        draftable_attrs.map {|a| locales.each {|l| "#{a}_#{l.lowercase}"} if self.translated_attribute_names.include? a}
+        puts draftable_attrs
         # If there's already an update draft, get its changes and reconcile them
         # manually.
         if event == :update
@@ -412,9 +414,6 @@ module Draftsman
             if self.draft? && self.draft.changeset && self.draft.changeset.key?(attr)
               the_changes[attr] = [self.draft.changeset[attr].first, send(attr)]
             else
-              puts attr
-              puts self.send("#{attr}_was")
-              puts send(attr)
               the_changes[attr] = [self.send("#{attr}_was"), send(attr)]
             end
           end
@@ -423,7 +422,7 @@ module Draftsman
         else
           draftable_attrs.each { |attr| the_changes[attr] = [nil, send(attr)] }
         end
-        puts the_changes
+
         # Purge attributes that haven't changed.
         the_changes.delete_if { |key, value| value.first == value.last }
       end
