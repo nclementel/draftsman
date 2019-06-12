@@ -404,7 +404,7 @@ module Draftsman
         draftable_attrs = draftable_attrs & only if only.present?
 
         locales = self.translations.map {|l| l.locale}
-        draftable_attrs.map! {|a| self.translated_attribute_names.include?(a.to_sym) ? locales.map {|l| "#{a}_#{l.downcase}"} : a}.flatten
+        # draftable_attrs.map! {|a| self.translated_attribute_names.include?(a.to_sym) ? locales.map {|l| "#{a}_#{l.downcase}"} : a}.flatten
         # If there's already an update draft, get its changes and reconcile them
         # manually.
         if event == :update
@@ -412,8 +412,12 @@ module Draftsman
           draftable_attrs.each do |attr|
             if self.draft? && self.draft.changeset && self.draft.changeset.key?(attr)
               the_changes[attr] = [self.draft.changeset[attr].first, send(attr)]
-            elsif self.globalize_attribute_names.include? attr.to_sym
-              the_changes[attr] = [nil, self.send(attr)]
+            elsif self.translated_attribute_names.include? attr.to_sym
+              locales.each do |l|
+                attr = "#{attr}_#{l.downcase}"
+                puts attr
+                the_changes[attr] = [nil, self.send(attr)]
+              end
             else
               the_changes[attr] = [self.send("#{attr}_was"), self.send(attr)]
             end
