@@ -177,14 +177,13 @@ module Draftsman
       # Returns serialized object representing this drafted item.
       def object_attrs_for_draft_record(object = nil)
         object ||= self
-        puts object
-        puts self
+
         locales = object.translations.map {|l| l.locale}
-        attrs = object.attributes.except(*self.class.draftsman_options[:skip]).tap
+        attrs = object.attributes.except(*self.class.draftsman_options[:skip])
         puts attrs
         attrs.map! {|a| object.translated_attribute_names.include?(a.to_sym) ? locales.map {|l| "#{a}_#{l.downcase}"} : a}.flatten
         puts attrs
-        attrs do |attributes|
+        attrs = attrs.tap do |attributes|
           # if self.translated_attribute_names.include? attr.to_sym
           #   locales.each do |l|
           #     attributes_l = "#{attributes}_#{l.downcase}"
