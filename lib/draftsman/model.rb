@@ -403,9 +403,8 @@ module Draftsman
         draftable_attrs = self.attributes.keys - ignore - skip
         draftable_attrs = draftable_attrs & only if only.present?
 
-        locales = self.translations.map {|l| l.locale}
-        draftable_attrs.map {|a| locales.each {|l| "#{a}_#{l.lowercase}"} if self.translated_attribute_names.include? a}
-        puts draftable_attrs
+        locales = record.translations.map {|l| l.locale}
+        draftable_attrs.map! {|a| record.translated_attribute_names.include?(a.to_sym) ? locales.map {|l| "#{a}_#{l.downcase}"} : a}.flatten
         # If there's already an update draft, get its changes and reconcile them
         # manually.
         if event == :update
