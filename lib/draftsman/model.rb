@@ -179,8 +179,8 @@ module Draftsman
         object ||= self
         globalize = true
         attrs = object.attributes.except(*self.class.draftsman_options[:skip])
-        puts attrs
         if globalize
+          attrs.delete_if { |k, v| object.translated_attribute_names.include? k }
           object.translations.each do |l|
             object.translated_attribute_names.each do |attr|
               attrs["#{attr}_#{l.locale}"] = l.send(attr)
@@ -188,17 +188,8 @@ module Draftsman
           end
         end
 
-        puts attrs
-
         attrs = attrs.tap do |attributes|
-          # if self.translated_attribute_names.include? attr.to_sym
-          #   locales.each do |l|
-          #     attributes_l = "#{attributes}_#{l.downcase}"
-          #     self.class.serialize_attributes_for_draftsman(attributes_l)
-          #   end
-          # else
-            self.class.serialize_attributes_for_draftsman(attributes)
-          # end
+          self.class.serialize_attributes_for_draftsman(attributes)
         end
 
         if self.class.draft_class.object_col_is_json?
@@ -386,7 +377,6 @@ module Draftsman
                   end
                 # If there's not an existing draft, create an update draft.
                 else
-                  puts data.inspect
                   send("build_#{self.class.draft_association_name}", data)
 
                   if send(self.class.draft_association_name).save
@@ -421,6 +411,7 @@ module Draftsman
         only   = self.class.draftsman_options[:only]
         draftable_attrs = self.attributes.keys - ignore - skip
         draftable_attrs = draftable_attrs & only if only.present?
+        draftable_attrs.delete_if { |k| object.translated_attribute_names.include? k }
 
         # If there's already an update draft, get its changes and reconcile them
         # manually.
