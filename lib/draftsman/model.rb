@@ -179,7 +179,7 @@ module Draftsman
         object ||= self
         globalize = true
         attrs = object.attributes.except(*self.class.draftsman_options[:skip])
-        if globalize
+        if globalize && object.translations
           attrs.delete_if { |k, v| object.translated_attribute_names.include? k }
           object.translations.each do |l|
             object.translated_attribute_names.each do |attr|
@@ -427,7 +427,7 @@ module Draftsman
             end
           end
 
-          if globalize
+          if globalize && self.translations
             self.translations.each do |l|
               self.translated_attribute_names.each do |attr|
                 the_changes["#{attr}_#{l.locale}"] = [nil, l.send(attr)]
