@@ -411,7 +411,7 @@ module Draftsman
         only   = self.class.draftsman_options[:only]
         draftable_attrs = self.attributes.keys - ignore - skip
         draftable_attrs = draftable_attrs & only if only.present?
-        draftable_attrs.delete_if { |k| self.translated_attribute_names.include? k }
+        draftable_attrs.delete_if { |a| self.translated_attribute_names.include? a.to_sym }
 
         # If there's already an update draft, get its changes and reconcile them
         # manually.
