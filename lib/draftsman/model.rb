@@ -411,17 +411,9 @@ module Draftsman
         only   = self.class.draftsman_options[:only]
         draftable_attrs = self.attributes.keys - ignore - skip
         draftable_attrs = draftable_attrs & only if only.present?
-
+        draftable_attrs.delete_if { |a| self.translated_attribute_names.include? a.to_sym }
 
         globalize = true
-        if globalize
-          draftable_attrs.delete_if { |a| self.translated_attribute_names.include? a.to_sym }
-          self.translations.each do |l|
-            self.translated_attribute_names.each do |attr|
-              draftable_attrs["#{attr}_#{l.locale}"] = l.send(attr)
-            end
-          end
-        end
 
         # If there's already an update draft, get its changes and reconcile them
         # manually.
@@ -436,6 +428,15 @@ module Draftsman
               the_changes[attr] = [self.send("#{attr}_was"), send(attr)]
             end
           end
+
+          if globalize
+            self.translations.each do |l|
+              self.translated_attribute_names.each do |attr|
+                the_changes["#{attr}_#{l.locale}"] = [nil, l.send(attr)]
+              end
+            end
+          end
+
         # If there is no draft or it's for a create, then all draftable
         # attributes are the changes.
         else
