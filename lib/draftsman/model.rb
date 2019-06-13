@@ -423,8 +423,6 @@ module Draftsman
             if self.draft? && self.draft.changeset && self.draft.changeset.key?(attr)
               the_changes[attr] = [self.draft.changeset[attr].first, send(attr)]
             else
-              puts attr
-              puts self.send("#{attr}_was")
               the_changes[attr] = [self.send("#{attr}_was"), send(attr)]
             end
           end
@@ -432,9 +430,6 @@ module Draftsman
           if globalize
             self.translations.each do |l|
               self.translated_attribute_names.each do |attr|
-                puts attr
-                puts l.send(attr)
-                puts self.send(attr)
                 the_changes["#{attr}_#{l.locale}"] = [nil, l.send(attr)]
               end
             end
@@ -477,6 +472,7 @@ module Draftsman
         if self.class.draftsman_options[:only].any?
           only_changes = {}
           only_changed_attributes = self.attributes.keys - self.class.draftsman_options[:only]
+          only_changed_attributes.delete_if { |a| self.translated_attribute_names.include? a.to_sym }
 
           only_changed_attributes.each do |key|
             only_changes[key] = send(key) if changed.include?(key)
