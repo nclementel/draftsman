@@ -421,6 +421,8 @@ module Draftsman
             if self.draft? && self.draft.changeset && self.draft.changeset.key?(attr)
               the_changes[attr] = [self.draft.changeset[attr].first, send(attr)]
             else
+              puts attr
+              puts self.send("#{attr}_was")
               the_changes[attr] = [self.send("#{attr}_was"), send(attr)]
             end
           end
