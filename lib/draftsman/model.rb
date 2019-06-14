@@ -181,6 +181,7 @@ module Draftsman
         attrs = object.attributes.except(*self.class.draftsman_options[:skip])
 
         if globalize && !object.try(:translations).nil?
+          puts object.translated_attribute_names
           attrs.delete_if { |k, v| object.translated_attribute_names.include? k }
           object.translations.each do |l|
             object.translated_attribute_names.each do |attr|
@@ -194,12 +195,10 @@ module Draftsman
         end
 
         if self.class.draft_class.object_col_is_json?
-          puts 'here'
           attrs
         else
           Draftsman.serializer.dump(attrs)
         end
-        puts attrs
       end
 
       # Returns whether or not this item has been published at any point in its lifecycle.
