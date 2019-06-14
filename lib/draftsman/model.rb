@@ -433,7 +433,7 @@ module Draftsman
               the_changes[attr] = [self.send("#{attr}_was"), send(attr)]
             end
           end
-
+          puts self.try(:translations).nil?
           if globalize && !self.try(:translations).nil?
             self.translations.each do |l|
               self.translated_attribute_names.each do |attr|
