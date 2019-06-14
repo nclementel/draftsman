@@ -179,6 +179,7 @@ module Draftsman
         object ||= self
         globalize = true
         attrs = object.attributes.except(*self.class.draftsman_options[:skip])
+        puts attrs
         if globalize && !object.try(:translations).nil?
           attrs.delete_if { |k, v| object.translated_attribute_names.include? k }
           object.translations.each do |l|
@@ -197,6 +198,7 @@ module Draftsman
         else
           Draftsman.serializer.dump(attrs)
         end
+        puts 'here'
       end
 
       # Returns whether or not this item has been published at any point in its lifecycle.
@@ -423,6 +425,8 @@ module Draftsman
             if self.draft? && self.draft.changeset && self.draft.changeset.key?(attr)
               the_changes[attr] = [self.draft.changeset[attr].first, send(attr)]
             else
+              puts attr
+              puts self.send("#{attr}_was")
               the_changes[attr] = [self.send("#{attr}_was"), send(attr)]
             end
           end
