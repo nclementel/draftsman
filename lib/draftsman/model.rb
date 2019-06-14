@@ -179,7 +179,7 @@ module Draftsman
         object ||= self
         globalize = true
         attrs = object.attributes.except(*self.class.draftsman_options[:skip])
-        puts attrs
+
         if globalize && !object.try(:translations).nil?
           attrs.delete_if { |k, v| object.translated_attribute_names.include? k }
           object.translations.each do |l|
@@ -194,11 +194,12 @@ module Draftsman
         end
 
         if self.class.draft_class.object_col_is_json?
+          puts 'here'
           attrs
         else
           Draftsman.serializer.dump(attrs)
         end
-        puts 'here'
+        puts attrs
       end
 
       # Returns whether or not this item has been published at any point in its lifecycle.
@@ -379,6 +380,7 @@ module Draftsman
                   end
                 # If there's not an existing draft, create an update draft.
                 else
+                  puts data
                   send("build_#{self.class.draft_association_name}", data)
 
                   if send(self.class.draft_association_name).save
@@ -428,12 +430,10 @@ module Draftsman
             if self.draft? && self.draft.changeset && self.draft.changeset.key?(attr)
               the_changes[attr] = [self.draft.changeset[attr].first, send(attr)]
             else
-              puts attr
-              puts self.send("#{attr}_was")
               the_changes[attr] = [self.send("#{attr}_was"), send(attr)]
             end
           end
-          puts self.try(:translations).nil?
+
           if globalize && !self.try(:translations).nil?
             self.translations.each do |l|
               self.translated_attribute_names.each do |attr|
@@ -447,6 +447,7 @@ module Draftsman
         else
           draftable_attrs.each { |attr| the_changes[attr] = [nil, send(attr)] }
         end
+        puts the_changes
         # Purge attributes that haven't changed.
         the_changes.delete_if { |key, value| value.first == value.last }
       end
@@ -479,7 +480,10 @@ module Draftsman
         if self.class.draftsman_options[:only].any?
           only_changes = {}
           only_changed_attributes = self.attributes.keys - self.class.draftsman_options[:only]
-          only_changed_attributes.delete_if { |a| self.translated_attribute_names.include? a.to_sym }
+
+          unless self.try(:translations).nil?
+            only_changed_attributes.delete_if { |a| self.translated_attribute_names.include? a.to_sym }
+          end
 
           only_changed_attributes.each do |key|
             only_changes[key] = send(key) if changed.include?(key)
