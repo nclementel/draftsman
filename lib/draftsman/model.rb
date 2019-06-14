@@ -413,7 +413,10 @@ module Draftsman
         only   = self.class.draftsman_options[:only]
         draftable_attrs = self.attributes.keys - ignore - skip
         draftable_attrs = draftable_attrs & only if only.present?
-        draftable_attrs.delete_if { |a| self.translated_attribute_names.include? a.to_sym }
+
+        unless self.try(:translations).nil?
+          draftable_attrs.delete_if { |a| self.translated_attribute_names.include? a.to_sym }
+        end
 
         globalize = true
 
