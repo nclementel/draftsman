@@ -381,7 +381,7 @@ module Draftsman
                   end
                 # If there's not an existing draft, create an update draft.
                 else
-                  puts data
+                  puts "data: #{data}"
                   send("build_#{self.class.draft_association_name}", data)
 
                   if send(self.class.draft_association_name).save
@@ -432,7 +432,7 @@ module Draftsman
               the_changes[attr] = [self.send("#{attr}_was"), send(attr)]
             end
           end
-
+          puts "globalize?: #{self.class.globalize_draft}"
           if self.class.globalize_draft
             self.translations.each do |l|
               self.translated_attribute_names.each do |attr|
@@ -446,7 +446,7 @@ module Draftsman
         else
           draftable_attrs.each { |attr| the_changes[attr] = [nil, send(attr)] }
         end
-        puts the_changes
+        puts "Changes: #{the_changes}"
         # Purge attributes that haven't changed.
         the_changes.delete_if { |key, value| value.first == value.last }
       end
