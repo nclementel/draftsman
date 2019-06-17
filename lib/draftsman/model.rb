@@ -440,6 +440,7 @@ module Draftsman
                 puts attr
                 puts l.name_was
                 puts l.send("#{attr}_was")
+                puts l.attr
                 the_changes["#{attr}_#{l.locale}"] = [l.send("#{attr}_was"), l.attr]
               end
             end
