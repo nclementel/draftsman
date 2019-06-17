@@ -77,6 +77,9 @@ module Draftsman
         class_attribute :draft_class_name
         self.draft_class_name = options[:class_name] || Draftsman.draft_class_name
 
+        class_attribute :globalize
+        self.globalize = options[:globalize] || false
+
         [:ignore, :skip, :only].each do |key|
           draftsman_options[key] = ([draftsman_options[key]].flatten.compact || []).map(&:to_s)
         end
@@ -177,12 +180,11 @@ module Draftsman
       # Returns serialized object representing this drafted item.
       def object_attrs_for_draft_record(object = nil)
         object ||= self
-        globalize = true
         attrs = object.attributes.except(*self.class.draftsman_options[:skip])
 
-        if globalize && !object.try(:translations).nil?
+        if self.class.globalize && !object.try(:translations).nil?
           puts object.translated_attribute_names
-          attrs.delete_if { |k, v| object.translated_attribute_names.include? k }
+          attrs.delete_if { |k, v| object.translated_attribute_names.include? k.to_sym }
           object.translations.each do |l|
             object.translated_attribute_names.each do |attr|
               attrs["#{attr}_#{l.locale}"] = l.send(attr)
@@ -419,8 +421,6 @@ module Draftsman
           draftable_attrs.delete_if { |a| self.translated_attribute_names.include? a.to_sym }
         end
 
-        globalize = true
-
         # If there's already an update draft, get its changes and reconcile them
         # manually.
         if event == :update
@@ -433,7 +433,7 @@ module Draftsman
             end
           end
 
-          if globalize && !self.try(:translations).nil?
+          if self.class.globalize && !self.try(:translations).nil?
             self.translations.each do |l|
               self.translated_attribute_names.each do |attr|
                 the_changes["#{attr}_#{l.locale}"] = [nil, l.send(attr)]
