@@ -78,7 +78,7 @@ module Draftsman
         self.draft_class_name = options[:class_name] || Draftsman.draft_class_name
 
         class_attribute :globalize_draft
-        self.globalize_draft = options[:globalize_draft] || true
+        self.globalize_draft = options[:globalize_draft] unless self.try(:translations).nil? || false
 
         [:ignore, :skip, :only].each do |key|
           draftsman_options[key] = ([draftsman_options[key]].flatten.compact || []).map(&:to_s)
@@ -182,9 +182,9 @@ module Draftsman
         object ||= self
         attrs = object.attributes.except(*self.class.draftsman_options[:skip])
 
-        if self.class.globalize_draft && !object.try(:translations).nil?
-          puts object.translated_attribute_names
+        if self.class.globalize_draft
           attrs.delete_if { |k, v| object.translated_attribute_names.include? k.to_sym }
+
           object.translations.each do |l|
             object.translated_attribute_names.each do |attr|
               attrs["#{attr}_#{l.locale}"] = l.send(attr)
@@ -433,7 +433,7 @@ module Draftsman
             end
           end
 
-          if self.class.globalize_draft && !self.try(:translations).nil?
+          if self.class.globalize_draft
             self.translations.each do |l|
               self.translated_attribute_names.each do |attr|
                 the_changes["#{attr}_#{l.locale}"] = [nil, l.send(attr)]
