@@ -77,8 +77,8 @@ module Draftsman
         class_attribute :draft_class_name
         self.draft_class_name = options[:class_name] || Draftsman.draft_class_name
 
-        class_attribute :globalize
-        self.globalize = options[:globalize] || false
+        class_attribute :globalize_draft
+        self.globalize = options[:globalize_draft] || true
 
         [:ignore, :skip, :only].each do |key|
           draftsman_options[key] = ([draftsman_options[key]].flatten.compact || []).map(&:to_s)
