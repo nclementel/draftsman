@@ -78,7 +78,6 @@ module Draftsman
         self.draft_class_name = options[:class_name] || Draftsman.draft_class_name
 
         class_attribute :globalize_draft
-        puts "Translations: #{self.try(:translations).nil?}"
         self.globalize_draft = options[:globalize_draft] || false
 
         [:ignore, :skip, :only].each do |key|
@@ -433,11 +432,13 @@ module Draftsman
               the_changes[attr] = [self.send("#{attr}_was"), send(attr)]
             end
           end
-          puts "globalize?: #{self.class.globalize_draft}"
-          puts "globalize?: #{self.globalize_draft}"
-          if self.class.globalize_draft
+
+          if self.globalize_draft
             self.translations.each do |l|
+              puts l
               self.translated_attribute_names.each do |attr|
+                puts attr
+                puts l.send(attr)
                 the_changes["#{attr}_#{l.locale}"] = [nil, l.send(attr)]
               end
             end
