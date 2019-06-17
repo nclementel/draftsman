@@ -187,7 +187,7 @@ module Draftsman
 
           object.translations.each do |l|
             object.translated_attribute_names.each do |attr|
-              attrs["#{attr}_#{l.locale}"] = l.send(attr)
+              attrs["#{attr}_#{l.locale}"] = l.attr
             end
           end
         end
@@ -435,11 +435,8 @@ module Draftsman
 
           if self.globalize_draft
             self.translations.each do |l|
-              puts l
               self.translated_attribute_names.each do |attr|
-                puts attr
-                puts l.send(attr)
-                the_changes["#{attr}_#{l.locale}"] = [nil, l.send(attr)]
+                the_changes["#{attr}_#{l.locale}"] = [l.attr_was, l.attr]
               end
             end
           end
