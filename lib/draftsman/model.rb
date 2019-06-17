@@ -433,6 +433,7 @@ module Draftsman
             end
           end
           puts "globalize?: #{self.class.globalize_draft}"
+          puts "globalize?: #{self.globalize_draft}"
           if self.class.globalize_draft
             self.translations.each do |l|
               self.translated_attribute_names.each do |attr|
