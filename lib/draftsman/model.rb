@@ -352,6 +352,7 @@ module Draftsman
               send(self.class.draft_association_name).update(data)
               save
             else
+              puts "1: #{self.translations}"
               the_changes = changes_for_draftsman(:update)
               save_only_columns_for_draft if Draftsman.stash_drafted_changes?
               # Destroy the draft if this record has changed back to the
@@ -416,7 +417,7 @@ module Draftsman
         only   = self.class.draftsman_options[:only]
         draftable_attrs = self.attributes.keys - ignore - skip
         draftable_attrs = draftable_attrs & only if only.present?
-
+        puts "2: #{self.translations}"
         unless self.try(:translations).nil?
           draftable_attrs.delete_if { |a| self.translated_attribute_names.include? a.to_sym }
         end
