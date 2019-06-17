@@ -78,7 +78,7 @@ module Draftsman
         self.draft_class_name = options[:class_name] || Draftsman.draft_class_name
 
         class_attribute :globalize_draft
-        puts "Option #{options[:globalize_draft]}"
+        puts "Translations: #{self.try(:translations).nil?}"
         self.globalize_draft = options[:globalize_draft] || false
 
         [:ignore, :skip, :only].each do |key|
