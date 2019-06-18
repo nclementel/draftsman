@@ -440,6 +440,7 @@ module Draftsman
               self.translated_attribute_names.each do |attr|
                 puts l.locale
                 puts attr
+                puts l.attr
                 puts l.send(attr)
                 the_changes["#{attr}_#{l.locale}"] = [l.send("#{attr}_was"), l.send(attr)]
               end
