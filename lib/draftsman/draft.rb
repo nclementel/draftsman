@@ -173,15 +173,14 @@ class Draftsman::Draft < ActiveRecord::Base
       case self.event.to_sym
       when :create, :update
         # Parents must be published too
-        puts "Depend: #{self.draft_publication_dependencies}"
         self.draft_publication_dependencies.each { |dependency| dependency.publish! }
 
         # Update drafts need to copy over data to main record
         puts "Reify: #{self.reify.attributes}"
-        puts self.reify
+        puts self.reify.inspect
         puts self.changeset
         self.item.attributes = self.reify.attributes if Draftsman.stash_drafted_changes? && self.update?
-        puts "Attr: #{self.item.attributes}"
+
         # Write `published_at` attribute
         self.item.send("#{self.item.class.published_at_attribute_name}=", current_time_from_proper_timezone)
 
@@ -220,6 +219,7 @@ class Draftsman::Draft < ActiveRecord::Base
         reify_previous_draft.reify
       # Prefer changeset for refication if it's present.
       elsif self.changeset.present? && self.changeset.any?
+        puts "here 1"
         self.changeset.each do |key, value|
           # Skip counter_cache columns
           if self.item.respond_to?("#{key}=") && !key.end_with?('_count')
@@ -233,7 +233,9 @@ class Draftsman::Draft < ActiveRecord::Base
         self.item
       # Reify based on object if it's all that's available.
       elsif self.object.present?
+        puts "here 2"
         attrs = self.class.object_col_is_json? ? self.object : Draftsman.serializer.load(self.object)
+        puts attrs
         self.item.class.unserialize_attributes_for_draftsman(attrs)
 
         attrs.each do |key, value|
