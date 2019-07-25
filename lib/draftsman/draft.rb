@@ -185,8 +185,9 @@ class Draftsman::Draft < ActiveRecord::Base
         self.item.send("#{self.item.class.draft_association_name}_id=", nil)
 
         self.item.save(self.item.draftsman_options[:publish_options].merge(options))
+        puts self.item.translations.inspect
         self.item.reload
-
+        puts self.item.translations.inspect
         # Destroy draft
         self.destroy
       when :destroy
