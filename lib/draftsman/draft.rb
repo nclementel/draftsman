@@ -191,9 +191,9 @@ class Draftsman::Draft < ActiveRecord::Base
           end
         end
 
-        # Clear out draft
-        self.item.send("#{self.item.class.draft_association_name}_id=", nil)
-        self.item.save(self.item.draftsman_options[:publish_options].merge(options))
+        # # Clear out draft
+        # self.item.send("#{self.item.class.draft_association_name}_id=", nil)
+        # self.item.save(self.item.draftsman_options[:publish_options].merge(options))
         self.item.reload
 
         # Destroy draft
