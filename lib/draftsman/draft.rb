@@ -180,14 +180,13 @@ class Draftsman::Draft < ActiveRecord::Base
         puts self.item.translations.inspect
         # Write `published_at` attribute
         self.item.send("#{self.item.class.published_at_attribute_name}=", current_time_from_proper_timezone)
-
+        puts self.item.translations.inspect
         # Clear out draft
         self.item.send("#{self.item.class.draft_association_name}_id=", nil)
-
+        puts self.item.translations.inspect
         self.item.save(self.item.draftsman_options[:publish_options].merge(options))
-        puts self.item.translations.inspect
         self.item.reload
-        puts self.item.translations.inspect
+
         # Destroy draft
         self.destroy
       when :destroy
