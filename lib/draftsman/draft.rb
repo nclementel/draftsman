@@ -175,18 +175,17 @@ class Draftsman::Draft < ActiveRecord::Base
         # Parents must be published too
         self.draft_publication_dependencies.each { |dependency| dependency.publish! }
 
-        if self.item.respond_to? 'description'
-          self.item.description_will_change!
-        end
-
         # Update drafts need to copy over data to main record
         self.item.attributes = self.reify.attributes if Draftsman.stash_drafted_changes? && self.update?
-        # self.translations.each do |l|
-        #   self.translated_attribute_names.each do |attr|
-        #     # the_changes["#{attr}_#{l.locale}"] = [l.send("#{attr}_was"), l.send(attr)]
-        #     self.item.attributes = {attr: description_en, locale: :en}
-        #   end
-        # end
+
+        self.translations.each do |l|
+          self.translated_attribute_names.each do |attr|
+            # the_changes["#{attr}_#{l.locale}"] = [l.send("#{attr}_was"), l.send(attr)]
+            # @location.send("approach_#{locale}")
+            # session.attributes = {description description_en, locale: :en}
+            self.item.attributes = {:"#{attr}"=> self.item.send("#{attr}_#{l.locale}"), locale: "#{l.locale}".to_sym}
+          end
+        end
         # Write `published_at` attribute
         self.item.send("#{self.item.class.published_at_attribute_name}=", current_time_from_proper_timezone)
 
