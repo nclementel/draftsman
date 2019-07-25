@@ -178,6 +178,8 @@ class Draftsman::Draft < ActiveRecord::Base
 
         # Update drafts need to copy over data to main record
         puts "Reify: #{self.reify.attributes}"
+        puts self.reify
+        puts self.changeset
         self.item.attributes = self.reify.attributes if Draftsman.stash_drafted_changes? && self.update?
         puts "Attr: #{self.item.attributes}"
         # Write `published_at` attribute
