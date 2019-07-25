@@ -175,6 +175,9 @@ class Draftsman::Draft < ActiveRecord::Base
         # Parents must be published too
         self.draft_publication_dependencies.each { |dependency| dependency.publish! }
 
+        # Update drafts need to copy over data to main record
+        self.item.attributes = self.reify.attributes if Draftsman.stash_drafted_changes? && self.update?
+
         self.item.translations.each do |l|
           puts l.inspect
           self.item.translated_attribute_names.each do |attr|
@@ -186,11 +189,6 @@ class Draftsman::Draft < ActiveRecord::Base
             l.update("#{attr}"=> l.send(attr))
           end
         end
-
-        # Update drafts need to copy over data to main record
-        self.item.attributes = self.reify.attributes if Draftsman.stash_drafted_changes? && self.update?
-
-
         # Write `published_at` attribute
         self.item.send("#{self.item.class.published_at_attribute_name}=", current_time_from_proper_timezone)
 
