@@ -240,10 +240,10 @@ class Draftsman::Draft < ActiveRecord::Base
             logger.warn("Attribute #{key} does not exist on #{self.item_type} (Draft ID: #{self.id}).")
           end
         end
-
+        puts self.item.inspect
         self.item.send("#{self.item.class.draft_association_name}=", self)
         self.item
-        puts self.item
+        puts self.item.inspect
       end
     end
   end
