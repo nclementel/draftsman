@@ -176,9 +176,6 @@ class Draftsman::Draft < ActiveRecord::Base
         self.draft_publication_dependencies.each { |dependency| dependency.publish! }
 
         # Update drafts need to copy over data to main record
-        puts "Reify: #{self.reify.attributes}"
-        puts self.reify.inspect
-        puts self.changeset
         self.item.attributes = self.reify.attributes if Draftsman.stash_drafted_changes? && self.update?
 
         # Write `published_at` attribute
@@ -219,7 +216,6 @@ class Draftsman::Draft < ActiveRecord::Base
         reify_previous_draft.reify
       # Prefer changeset for refication if it's present.
       elsif self.changeset.present? && self.changeset.any?
-        puts "here 1"
         self.changeset.each do |key, value|
           # Skip counter_cache columns
           if self.item.respond_to?("#{key}=") && !key.end_with?('_count')
@@ -233,14 +229,13 @@ class Draftsman::Draft < ActiveRecord::Base
         self.item
       # Reify based on object if it's all that's available.
       elsif self.object.present?
-        puts "here 2"
         attrs = self.class.object_col_is_json? ? self.object : Draftsman.serializer.load(self.object)
-        puts attrs
         self.item.class.unserialize_attributes_for_draftsman(attrs)
 
         attrs.each do |key, value|
           # Skip counter_cache columns
           if self.item.respond_to?("#{key}=") && !key.end_with?('_count')
+            puts "key: #{key}, val: #{value}"
             self.item.send("#{key}=", value)
           elsif !key.end_with?('_count')
             logger.warn("Attribute #{key} does not exist on #{self.item_type} (Draft ID: #{self.id}).")
