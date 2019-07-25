@@ -185,6 +185,8 @@ class Draftsman::Draft < ActiveRecord::Base
         self.item.send("#{self.item.class.draft_association_name}_id=", nil)
         puts self.item.translations.inspect
         puts self.item.draftsman_options[:publish_options]
+        puts self.item.changes
+        puts self.item.translations.changes
         self.item.save(self.item.draftsman_options[:publish_options].merge(options))
         self.item.reload
 
