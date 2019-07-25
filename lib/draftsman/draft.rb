@@ -179,13 +179,12 @@ class Draftsman::Draft < ActiveRecord::Base
           puts l
           self.item.translated_attribute_names.each do |attr|
             puts attr
-            puts "#{attr}_#{l.locale}"
+            puts self.item.send("#{attr}_#{l.locale}")
             puts "#{l.locale}".to_sym
             # the_changes["#{attr}_#{l.locale}"] = [l.send("#{attr}_was"), l.send(attr)]
             # @location.send("approach_#{locale}")
             # session.attributes = {description description_en, locale: :en}
-            self.item.attributes = {:"#{attr}"=> self.item.send("#{attr}_#{l.locale}"), locale: "#{l.locale}".to_sym}
-            self.item.save
+            l.update("#{attr}"=> l.send(attr))
           end
         end
 
