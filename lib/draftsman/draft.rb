@@ -174,7 +174,7 @@ class Draftsman::Draft < ActiveRecord::Base
       when :create, :update
         # Parents must be published too
         self.draft_publication_dependencies.each { |dependency| dependency.publish! }
-
+        puts self.raify.translations.inspect
         # Update drafts need to copy over data to main record
         self.item.attributes = self.reify.attributes if Draftsman.stash_drafted_changes? && self.update?
 
@@ -240,10 +240,8 @@ class Draftsman::Draft < ActiveRecord::Base
             logger.warn("Attribute #{key} does not exist on #{self.item_type} (Draft ID: #{self.id}).")
           end
         end
-        puts self.item.inspect
         self.item.send("#{self.item.class.draft_association_name}=", self)
         self.item
-        puts self.item.inspect
       end
     end
   end
