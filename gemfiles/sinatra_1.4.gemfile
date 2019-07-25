@@ -3,5 +3,7 @@
 source "https://rubygems.org"
 
 gem "sinatra", "~> 1.4.0"
+gem "globalize"
+gem "globalize-accessors"
 
 gemspec path: "../"

@@ -176,7 +176,11 @@ class Draftsman::Draft < ActiveRecord::Base
         self.draft_publication_dependencies.each { |dependency| dependency.publish! }
 
         self.item.translations.each do |l|
+          puts l
           self.item.translated_attribute_names.each do |attr|
+            puts attr
+            puts "#{attr}_#{l.locale}"
+            puts "#{l.locale}".to_sym
             # the_changes["#{attr}_#{l.locale}"] = [l.send("#{attr}_was"), l.send(attr)]
             # @location.send("approach_#{locale}")
             # session.attributes = {description description_en, locale: :en}
