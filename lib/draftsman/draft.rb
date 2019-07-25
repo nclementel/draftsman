@@ -187,13 +187,13 @@ class Draftsman::Draft < ActiveRecord::Base
         self.item.save(self.item.draftsman_options[:publish_options].merge(options))
         self.item.reload
 
-        self.item.attributes = self.reify.attributes if Draftsman.stash_drafted_changes? && self.update?
+        # self.item.attributes = self.reify.attributes if Draftsman.stash_drafted_changes? && self.update?
 
-        self.item.translations.each do |l|
-          self.item.translated_attribute_names.each do |attr|
-            l.update("#{attr}"=> l.send(attr))
-          end
-        end
+        # self.item.translations.each do |l|
+        #   self.item.translated_attribute_names.each do |attr|
+        #     l.update("#{attr}"=> l.send(attr))
+        #   end
+        # end
 
         # Destroy draft
         self.destroy
