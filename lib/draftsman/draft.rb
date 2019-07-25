@@ -178,24 +178,21 @@ class Draftsman::Draft < ActiveRecord::Base
         # Update drafts need to copy over data to main record
         self.item.attributes = self.reify.attributes if Draftsman.stash_drafted_changes? && self.update?
 
-        self.item.translations.each do |l|
-          puts l.inspect
-          self.item.translated_attribute_names.each do |attr|
-            puts attr
-            puts l.send(attr)
-            # the_changes["#{attr}_#{l.locale}"] = [l.send("#{attr}_was"), l.send(attr)]
-            # @location.send("approach_#{locale}")
-            # session.attributes = {description description_en, locale: :en}
-            l.update("#{attr}"=> l.send(attr))
-          end
-        end
         # Write `published_at` attribute
         self.item.send("#{self.item.class.published_at_attribute_name}=", current_time_from_proper_timezone)
 
-        # Clear out draft
-        self.item.send("#{self.item.class.draft_association_name}_id=", nil)
-
         self.item.save(self.item.draftsman_options[:publish_options].merge(options))
+
+        self.item.attributes = self.reify.attributes if Draftsman.stash_drafted_changes? && self.update?
+
+        self.item.translations.each do |l|
+          self.item.translated_attribute_names.each do |attr|
+            l.update("#{attr}"=> l.send(attr))
+          end
+        end
+
+        # Clear out draft
+        self.item.update(:"#{self.item.class.draft_association_name}_id=" => nil)
         self.item.reload
 
         # Destroy draft
