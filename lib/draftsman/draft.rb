@@ -235,7 +235,6 @@ class Draftsman::Draft < ActiveRecord::Base
         attrs.each do |key, value|
           # Skip counter_cache columns
           if self.item.respond_to?("#{key}=") && !key.end_with?('_count')
-            puts "key: #{key}, val: #{value}"
             self.item.send("#{key}=", value)
           elsif !key.end_with?('_count')
             logger.warn("Attribute #{key} does not exist on #{self.item_type} (Draft ID: #{self.id}).")
@@ -244,6 +243,7 @@ class Draftsman::Draft < ActiveRecord::Base
 
         self.item.send("#{self.item.class.draft_association_name}=", self)
         self.item
+        puts self.item
       end
     end
   end
