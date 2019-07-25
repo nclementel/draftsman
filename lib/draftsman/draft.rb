@@ -176,7 +176,7 @@ class Draftsman::Draft < ActiveRecord::Base
         self.draft_publication_dependencies.each { |dependency| dependency.publish! }
 
         if self.item.respond_to? 'description'
-          self.description_will_change!
+          self.item.description_will_change!
         end
 
         # Update drafts need to copy over data to main record
