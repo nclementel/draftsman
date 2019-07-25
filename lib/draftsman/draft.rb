@@ -174,10 +174,10 @@ class Draftsman::Draft < ActiveRecord::Base
       when :create, :update
         # Parents must be published too
         self.draft_publication_dependencies.each { |dependency| dependency.publish! }
-        puts self.raify.translations.inspect
+        puts self.reify.translations.inspect
         # Update drafts need to copy over data to main record
         self.item.attributes = self.reify.attributes if Draftsman.stash_drafted_changes? && self.update?
-
+        puts self.item.translations.inspect
         # Write `published_at` attribute
         self.item.send("#{self.item.class.published_at_attribute_name}=", current_time_from_proper_timezone)
 
