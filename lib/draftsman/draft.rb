@@ -173,11 +173,13 @@ class Draftsman::Draft < ActiveRecord::Base
       case self.event.to_sym
       when :create, :update
         # Parents must be published too
+        puts "Depend: #{self.draft_publication_dependencies}"
         self.draft_publication_dependencies.each { |dependency| dependency.publish! }
 
         # Update drafts need to copy over data to main record
+        puts "Reify: #{self.reify.attributes}"
         self.item.attributes = self.reify.attributes if Draftsman.stash_drafted_changes? && self.update?
-
+        puts "Attr: #{self.item.attributes}"
         # Write `published_at` attribute
         self.item.send("#{self.item.class.published_at_attribute_name}=", current_time_from_proper_timezone)
 
